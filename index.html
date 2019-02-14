@@ -14,7 +14,7 @@
     <div class="row" id="conteo"></div>
   </div>
 </body>
-<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
 <script>
   var socket = io();
   var jugador = '';  
@@ -22,6 +22,7 @@
   var cont = document.getElementById('conteo');
   var jugadores = ['luis', 'jorge', 'juan'];
   var contarKill = null;
+  var resultado = null;
   
 
   crearBotones = function(persona){
@@ -32,7 +33,7 @@
       div.innerHTML += `<button type="button" class="btn btn-primary btn-lg btn-block" onclick="contarKill('${integrante}')">${integrante}</button>`
     });
     if(persona === 'luis'){
-      div.innerHTML += `<br /><button type="button" class="btn btn-primary btn-lg btn-block" onclick="reset()">Resetear</button>`
+      div.innerHTML += `<h1>Reset</h1><button type="button" class="btn btn-primary btn-lg btn-block" onclick="reset()">Resetear</button>`
     }
   }
 
@@ -56,14 +57,15 @@
   };  
 
   var reset = function(){
+    console.log(resultado);
     socket.emit('reset');
   }
 
-  socket.on('kill', ({jugadores, mensaje})=>{    
-    console.log(mensaje);
+  socket.on('kill', ({jugadores, mensaje})=>{        
     cont.innerHTML = '';
+    resultado = jugadores;
     for(var attr in jugadores){
-      cont.innerHTML += `<div class="alert alert-primary" role="alert"><b>${attr}</b>: ${jugadores[attr]}</div><br />`;
+      cont.innerHTML += `<div class="alert alert-primary" role="alert"><b>${attr}</b>: ${jugadores[attr]['kills']}</div><br />`;
     }
     notificacion(mensaje);
   });
