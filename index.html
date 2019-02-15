@@ -1,84 +1,118 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Conteo de FortNite</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <style>
+    body {
+      background: url('https://www.abc.es/media/familia/2018/07/18/juego-fortnite-kbaB--1248x698@abc.jpg') center no-repeat;
+    }
+
+    #botones {
+      margin: 50px auto;
+    }
+
+    .alert {
+      margin: 20px;
+      box-shadow: #9f9f9f 4px 6px 5px 2px;
+      width: 200px;
+    }
+
+    button {
+      margin-top: 30px;
+    }
+  </style>
 </head>
-<body>    
+
+<body>
   <div class="container">
-    <div class="row" id="botones"></div>
-    <h5>Marcador</h5>
-    <div class="row" id="conteo"></div>
+    <div class="container-fluid">
+      <div class="row" id="botones"></div>
+      <h5>Marcador</h5>
+      <div class="row" id="conteo"></div>
+    </div>
   </div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
 <script>
   var socket = io();
-  var jugador = '';  
+  var jugador = '';
   var div = document.getElementById('botones');
   var cont = document.getElementById('conteo');
   var jugadores = ['luis', 'jorge', 'juan'];
   var contarKill = null;
   var resultado = null;
-  
 
-  crearBotones = function(persona){
+
+  crearBotones = function (persona) {
     var rivales = jugadores.filter(integrante => {
       return integrante !== persona;
     });
     rivales.map((integrante) => {
       div.innerHTML += `<button type="button" class="btn btn-primary btn-lg btn-block" onclick="contarKill('${integrante}')">${integrante}</button>`
     });
-    if(persona === 'luis'){
+    if (persona === 'luis') {
       div.innerHTML += `<h1>Reset</h1><button type="button" class="btn btn-primary btn-lg btn-block" onclick="reset()">Resetear</button>`
     }
   }
 
-  const quienEres = function(msj = 'Quien eres'){
+  const quienEres = function (msj = 'Quien eres') {
     jugador = prompt('Quien eres');
-    if(!jugador){
-      alert('Eres una perra, di quien eres!');  
+    if (!jugador) {
+      alert('Eres una perra, di quien eres!');
       quienEres('Debes digitar tu nombre mariquita!');
     } else {
       const validar = jugadores.find(persona => persona === jugador);
-      if(!validar){
+      if (!validar) {
         alert('No seas puto!, tu no estas en los jugadores de FortNite');
         quienEres('Si no estas en el grupo debes ser Slender!');
       } else {
         crearBotones(jugador);
-        contarKill = function(asesino){
-          socket.emit('kill', {asesino, asesinado: jugador});
+        contarKill = function (asesino) {
+          socket.emit('kill', { asesino, asesinado: jugador });
         }
       }
     }
-  };  
+  };
 
-  var reset = function(){
+  var reset = function () {
     console.log(resultado);
     socket.emit('reset');
   }
 
-  socket.on('kill', ({jugadores, mensaje})=>{        
+  socket.on('kill', ({ jugadores, mensaje }) => {
     cont.innerHTML = '';
     resultado = jugadores;
-    for(var attr in jugadores){
-      cont.innerHTML += `<div class="alert alert-primary" role="alert"><b>${attr}</b>: ${jugadores[attr]['kills']}</div><br />`;
+    for (var attr in jugadores) {
+      var perras = '<ul class="list-group">';
+      for (var perra in jugadores[attr]['perras']) {
+        perras += `<li class="list-group-item">${perra}<span class="badge badge-secondary">${jugadores[attr]['perras'][perra]}</span></li>`;
+      }
+      cont.innerHTML += `<div class="alert alert-primary" role="alert">
+                          <b>${attr}</b>: ${jugadores[attr]['kills']}
+                          <hr />
+                          <h6>perras</h6>
+                          ${perras}
+                          </ul>                                              
+                        </div>`;
     }
     notificacion(mensaje);
   });
 
-  function notificacion(msj) {  
+  function notificacion(msj) {
     if (!("Notification" in window)) {
       alert("Tu navegador no soporta Notificaciones!");
-    }  
-    else if (Notification.permission === "granted") {    
+    }
+    else if (Notification.permission === "granted") {
       var notification = new Notification(msj);
-    }  
+    }
     else if (Notification.permission !== 'denied') {
-      Notification.requestPermission(function (permission) {      
+      Notification.requestPermission(function (permission) {
         if (permission === "granted") {
           var notification = new Notification(msj);
         }
@@ -88,4 +122,5 @@
 
   quienEres();
 </script>
+
 </html>
