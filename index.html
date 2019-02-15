@@ -23,8 +23,10 @@
       width: 200px;
     }
 
-    button {
-      margin-top: 30px;
+    .btn {
+      margin-top: 40px;
+      margin-bottom: 20px;
+      box-shadow: #9f9f9f 4px 6px 4px 1px;
     }
   </style>
 </head>
@@ -94,7 +96,7 @@
         perras += `<li class="list-group-item">${perra}<span class="badge badge-secondary">${jugadores[attr]['perras'][perra]}</span></li>`;
       }
       cont.innerHTML += `<div class="alert alert-primary" role="alert">
-                          <b>${attr}</b>: ${jugadores[attr]['kills']}
+                          <b>${attr}</b>: ${jugadores[attr]['kills']} kills
                           <hr />
                           <h6>perras</h6>
                           ${perras}
